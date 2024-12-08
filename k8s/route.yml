@@ -1,0 +1,25 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshHTTPRoute
+metadata:
+ name: edge-gateway-route
+ namespace: kuma-system 
+ labels:
+   kuma.io/mesh: default
+spec:
+ targetRef:
+   kind: MeshGateway
+   name: api-gateway
+ to:
+ - targetRef:
+     kind: Mesh
+   rules:
+   - matches:
+     - path:
+         type: PathPrefix
+         value: "/"
+     default:
+       backendRefs:
+       - kind: MeshService
+         name: node-api
+         namespace: kuma-demo
+         port: 3000

@@ -1,0 +1,24 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshGatewayInstance
+metadata:
+  name: edge-gateway
+  namespace: kuma-demo
+spec:
+  replicas: 1
+  serviceType: LoadBalancer
+---
+apiVersion: kuma.io/v1alpha1
+kind: MeshGateway
+mesh: default
+metadata:
+  name: api-gateway
+spec:
+  selectors:
+    - match:
+        kuma.io/service: edge-gateway_kuma-demo_svc
+  conf:
+    listeners:
+      - port: 8080
+        protocol: HTTP
+        tags:
+          port: http-8080 
