@@ -1,0 +1,16 @@
+{
+	"name": "service-mesh",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"packageManager": "pnpm@9.12.2",
+	"scripts": {
+		"start": "node index.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"express": "^4.21.2"
+	}
+}
