@@ -1,25 +1,58 @@
+# 定义一个 Kuma MeshHTTPRoute 资源，用于配置 HTTP 路由。
 apiVersion: kuma.io/v1alpha1
 kind: MeshHTTPRoute
 metadata:
- name: edge-gateway-route
- namespace: kuma-system 
- labels:
-   kuma.io/mesh: default
+  # 指定路由的名称和命名空间。
+  name: edge-gateway-route
+  namespace: kuma-system
+  labels:
+    # 指定该资源属于默认的网格。
+    kuma.io/mesh: default
 spec:
- targetRef:
-   kind: MeshGateway
-   name: api-gateway
- to:
- - targetRef:
-     kind: Mesh
-   rules:
-   - matches:
-     - path:
-         type: PathPrefix
-         value: "/"
-     default:
-       backendRefs:
-       - kind: MeshService
-         name: node-api
-         namespace: kuma-demo
-         port: 3000
+  # 指定路由的目标是哪一个 MeshGateway。
+  targetRef:
+    kind: MeshGateway
+    name: my-gateway
+  to:
+    # 定义路由的目标是网格中的服务。
+    - targetRef:
+        kind: Mesh
+    rules:
+      # 定义具体的路由规则。
+      - matches:
+          # 匹配路径前缀为 "/" 的请求。
+        - path:
+            type: PathPrefix
+            value: "/"
+        default:
+          # 定义默认的后端服务。
+          backendRefs:
+            - kind: MeshService
+              # 指定后端服务的名称、命名空间和端口。
+              name: node-api
+              namespace: kuma-demo
+              port: 3000
+
+---
+# 定义一个 Kuma MeshTrafficPermission 资源，用于配置流量权限。
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  # 指定流量权限的命名空间和名称。
+  namespace: kuma-demo 
+  name: node-api
+spec:
+  # 指定流量权限的目标服务。
+  targetRef:
+    kind: MeshSubset
+    tags:
+      app: node-api
+  # 定义允许访问目标服务的源服务。
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags: 
+          kuma.io/service: edge-gateway_kuma-demo_svc 
+      default:
+        # 允许源服务访问目标服务。
+        action: Allow
