@@ -1,35 +1,25 @@
-# 定义一个 Kuma MeshGatewayInstance 资源，用于指定边缘网关的实例。
 apiVersion: kuma.io/v1alpha1
 kind: MeshGatewayInstance
 metadata:
-  # 指定网关实例的名称和命名空间。
   name: edge-gateway
   namespace: kuma-demo
 spec:
-  # 指定网关实例的副本数量。
   replicas: 1
-  # 指定服务类型为 LoadBalancer，以便网关可以从外部访问。
   serviceType: LoadBalancer
 
 ---
-# 定义一个 Kuma MeshGateway 资源，用于配置网关的行为。
 apiVersion: kuma.io/v1alpha1
 kind: MeshGateway
 mesh: default
 metadata:
-  # 指定网关的名称。
   name: my-gateway
 spec:
-  # 定义网关选择器，用于匹配特定的服务。
   selectors:
     - match:
-        # 匹配具有特定服务标签的服务。
         kuma.io/service: edge-gateway_kuma-demo_svc
-  # 配置网关的监听器。
   conf:
     listeners:
       - port: 8080
         protocol: HTTP
-        # 为监听器设置标签，这些标签可以用于流量路由和监控。
         tags:
           port: http-8080
